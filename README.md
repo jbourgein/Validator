@@ -31,7 +31,7 @@ Add `form-input` to attribute to input and that will be used in the text that di
 ```
 <div class="form-group">
     <label for="RegistrationNumberTextBox">Registration No</label>
-    <input type="text" ID="RegistrationNumberTextBox" class="form-control" validate="reg requried" form-input="registration number" placeholder="Reg No"></input>
+    <input type="text" ID="RegistrationNumberTextBox" class="form-control" validate="reg required" form-input="registration number" placeholder="Reg No"></input>
 </div>
 ```
 ```
