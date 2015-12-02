@@ -52,7 +52,7 @@
     }
 
     var _isValidVinNo = function (toAssess) {
-        var isValid = true;
+        var isValid = false;
         if (_isNotEmpty(toAssess)) {
             isValid = _containsNumbersLettersOnly(toAssess);
         }
@@ -79,7 +79,7 @@
 
     var _isValidCurrency = function (toAssess) {
         var validFloat = true;
-        var numberVal = parseFloat(toAssess);
+        var numberVal = parseFloat(toAssess);        
         validFloat = !_crossBrowserIsNaN(numberVal);
 
         return _isNotEmpty(toAssess) && validFloat;
@@ -92,16 +92,21 @@
     var bindInputErrors = function (input) {
         var validationInfo = input.attr("validate") || "";
         var isRequired = validationInfo.indexOf("required") !== -1;
-        var validationType = validationInfo.replace("required","").trim();
-        var elementName = input.attr("form-input");
+        var errorMessage = input.attr("error-message") || "";
+        var hasMessage = errorMessage.length > 0;
+        var validationType = validationInfo.replace("required", "").trim();
+        var elementName = input.attr("form-input") || "value";
         var parent = input.parent();
         var isValid = true;
         var valueToValidate = input.val();
+        var shouldShowIcon = (validationType !== "dropdown");
         var textTemplate = '<span class="help-block hidden">Please enter a valid ' + elementName + '</span>';
+
         if (parent.hasClass("input-group")) {
             parent = parent.parent();
+            shouldShowIcon = false;
         }
-        var iconElement = parent.find('.form-control-feedback');
+        var textElement = parent.find('.help-block');
 
         if (isRequired || valueToValidate.length > 0) {
             switch (validationType) {
@@ -138,24 +143,34 @@
         }
 
 
-        if (iconElement.length === 0) {
-            parent.append(iconTemplate);
+        if (textElement.length === 0) {
+            if (shouldShowIcon) {
+                parent.append(iconTemplate);
+            }
             parent.append(textTemplate);
         }
 
         if (!isValid) {
             parent.removeClass("has-success has-feedback");
             parent.addClass("has-error has-feedback");
-            parent.find(".glyphicon").addClass("glyphicon-remove");
-            parent.find(".glyphicon").removeClass("glyphicon-ok");
+            if (shouldShowIcon) {
+                parent.find(".glyphicon").addClass("glyphicon-remove");
+                parent.find(".glyphicon").removeClass("glyphicon-ok");
+
+            }
             parent.find(".help-block").removeClass("hidden");
+            
         }
         else {
             parent.removeClass("has-error has-feedback");
             parent.addClass("has-success has-feedback");
-            parent.find(".glyphicon").removeClass("glyphicon-remove");
-            parent.find(".glyphicon").addClass("glyphicon-ok");
+            if (shouldShowIcon) {
+                parent.find(".glyphicon").removeClass("glyphicon-remove");
+                parent.find(".glyphicon").addClass("glyphicon-ok");
+
+            }
             parent.find(".help-block").addClass("hidden");
+            
         }
         parent.find(".glyphicon").removeClass("hidden");
         return isValid;
@@ -188,7 +203,7 @@
         else {
             return this.each(function () {
                 if ($(this).attr(_options.attrName)) {
-                    $(this).off("blur", "**"); //remove blur events so we don't keep adding on postback
+                    $(this).off(_options.eventType); //remove blur events so we don't keep adding on postback
                     $(this).on(_options.eventType, function () {
                         bindInputErrors($(this));
                     })
